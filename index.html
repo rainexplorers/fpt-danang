@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rain Explorers – Dự báo mưa FPT School Đà Nẵng</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
+      --accent:#2563eb;--good:#0f766e;--shadow:0 10px 30px rgba(23,32,51,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:760px;margin:0 auto;padding:24px}
+    .hero{background:linear-gradient(135deg,#eaf2ff,#eefcf8);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow)}
+    h1{font-size:clamp(26px,5vw,40px);margin:0 0 8px}
+    .sub{color:var(--muted);font-size:15px;line-height:1.55}
+    .date{margin-top:18px;font-size:18px;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;text-align:center;box-shadow:var(--shadow)}
+    .flag{font-size:34px}.name{font-weight:750;margin-top:4px}.model{font-size:12px;color:var(--muted);margin-top:2px}
+    .rain{font-size:34px;font-weight:850;margin-top:12px}.unit{font-size:14px;color:var(--muted);font-weight:600}
+    .status{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;color:var(--muted);font-size:14px;line-height:1.6}
+    .status strong{color:var(--text)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    button{border:0;border-radius:14px;padding:12px 16px;font-weight:750;cursor:pointer;background:var(--accent);color:white;font-size:15px}
+    button.secondary{background:white;color:var(--text);border:1px solid var(--line)}
+    .note{margin-top:18px;font-size:13px;color:var(--muted);line-height:1.55}
+    .error{color:#b42318;font-weight:650}
+    @media (max-width:620px){.grid{grid-template-columns:1fr}.card{display:grid;grid-template-columns:60px 1fr 110px;align-items:center;text-align:left}.rain{text-align:right;margin:0}.model{margin-top:1px}.flag{font-size:30px}.wrap{padding:14px}.hero{padding:18px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>🌧️ Rain Explorers</h1>
+      <div class="sub">Dự báo lượng mưa ngày mai (00:00–24:00) cho khu vực FPT School Đà Nẵng từ 3 mô hình thời tiết quốc tế.</div>
+      <div id="targetDate" class="date">Đang tải ngày dự báo…</div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="flag">🇺🇸</div>
+          <div><div class="name">Mỹ</div><div class="model">NOAA / GFS</div></div>
+          <div class="rain"><span id="gfs">—</span> <span class="unit">mm</span></div>
+        </div>
+        <div class="card">
+          <div class="flag">🇪🇺</div>
+          <div><div class="name">Châu Âu</div><div class="model">ECMWF / IFS</div></div>
+          <div class="rain"><span id="ecmwf">—</span> <span class="unit">mm</span></div>
+        </div>
+        <div class="card">
+          <div class="flag">🇨🇳</div>
+          <div><div class="name">Trung Quốc</div><div class="model">CMA / GRAPES</div></div>
+          <div class="rain"><span id="cma">—</span> <span class="unit">mm</span></div>
+        </div>
+      </div>
+
+      <div id="status" class="status">Đang lấy dữ liệu mới nhất…</div>
+      <div class="actions">
+        <button id="reloadBtn">↻ Cập nhật số liệu</button>
+        <button class="secondary" id="copyBtn">📋 Copy 3 số</button>
+      </div>
+      <div class="note">
+        Quy ước cho dự án: mỗi ngày ghi dự báo cho <strong>ngày hôm sau</strong>, sau đó đối chiếu với lượng mưa thực tế của đúng ngày đó. Tọa độ yêu cầu: 15.979408, 108.260602. Múi giờ: Asia/Ho_Chi_Minh.
+      </div>
+    </section>
+  </main>
+
+<script>
+const LAT = 15.979408;
+const LON = 108.260602;
+const API = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=precipitation_sum&timezone=Asia%2FHo_Chi_Minh&forecast_days=3&models=ncep_gfs_seamless%2Cecmwf_ifs%2Ccma_grapes_global`;
+let latest = null;
+
+function fmtDate(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Intl.DateTimeFormat('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(y,m-1,d));
+}
+function formatRain(v){
+  return (v == null || !Number.isFinite(Number(v))) ? 'N/A' : Number(v).toFixed(1);
+}
+function setText(id,v){document.getElementById(id).textContent = formatRain(v)}
+function addDaysISO(iso,days){
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Date(Date.UTC(y,m-1,d+days)).toISOString().slice(0,10);
+}
+
+async function loadData(){
+  const status = document.getElementById('status');
+  status.classList.remove('error');
+  status.textContent = 'Đang lấy dữ liệu mới nhất…';
+  try{
+    const r = await fetch(API, {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    const daily = data.daily;
+    if(!daily || !daily.time || daily.time.length < 2) throw new Error('Không có dữ liệu ngày mai');
+    const tomorrow = addDaysISO(daily.time[0], 1);
+    const i = daily.time.indexOf(tomorrow);
+    if(i < 0) throw new Error('Không tìm thấy mốc ngày mai');
+    latest = {
+      date: daily.time[i],
+      gfs: daily.precipitation_sum_ncep_gfs_seamless?.[i],
+      ecmwf: daily.precipitation_sum_ecmwf_ifs?.[i],
+      cma: daily.precipitation_sum_cma_grapes_global?.[i]
+    };
+    document.getElementById('targetDate').textContent = 'Dự báo cho ' + fmtDate(latest.date);
+    setText('gfs', latest.gfs); setText('ecmwf', latest.ecmwf); setText('cma', latest.cma);
+    const now = new Intl.DateTimeFormat('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit',day:'2-digit',month:'2-digit',year:'numeric',timeZone:'Asia/Ho_Chi_Minh'}).format(new Date());
+    status.innerHTML = `<strong>Đã cập nhật:</strong> ${now}<br><strong>Nguồn:</strong> Open‑Meteo · GFS / ECMWF / CMA<br><strong>Ô lưới API:</strong> ${data.latitude}, ${data.longitude} · cao độ ${data.elevation ?? '—'} m`;
+  }catch(e){
+    latest = null;
+    document.getElementById('targetDate').textContent = 'Chưa tải được dự báo';
+    setText('gfs', null); setText('ecmwf', null); setText('cma', null);
+    status.classList.add('error');
+    status.textContent = 'Không tải được dữ liệu. Hãy kiểm tra Internet rồi bấm “Cập nhật số liệu”. ('+e.message+')';
+  }
+}
+
+document.getElementById('reloadBtn').addEventListener('click', loadData);
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  if(!latest) return;
+  const withUnit = v => formatRain(v) === 'N/A' ? 'N/A' : formatRain(v) + ' mm';
+  const txt = `Rain Explorers – ${latest.date}\n🇺🇸 GFS: ${withUnit(latest.gfs)}\n🇪🇺 ECMWF: ${withUnit(latest.ecmwf)}\n🇨🇳 CMA: ${withUnit(latest.cma)}`;
+  try{
+    await navigator.clipboard.writeText(txt);
+  }catch{
+    const ta=document.createElement('textarea');
+    ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  document.getElementById('copyBtn').textContent='✓ Đã copy';
+  setTimeout(()=>document.getElementById('copyBtn').textContent='📋 Copy 3 số',1500);
+});
+
+loadData();
+</script>
+</body>
+</html>
