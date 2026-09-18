@@ -1,0 +1,416 @@
+name: Save Rain Explorers forecasts
+
+on:
+  schedule:
+    # Three official collection times in Vietnam local time.
+    - cron: "0 0 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    - cron: "45 11 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+    - cron: "45 18 * * *"
+      timezone: "Asia/Ho_Chi_Minh"
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Slot to test or record"
+        required: true
+        default: "school_noon"
+        type: choice
+        options:
+          - midnight_daily
+          - school_noon
+          - vrain_evening
+      record_mode:
+        description: "test_only does not change repository data"
+        required: true
+        default: "test_only"
+        type: choice
+        options:
+          - test_only
+          - official
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rain-explorers-daily-data
+  cancel-in-progress: false
+
+jobs:
+  save-forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Calculate forecast snapshot
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE_EXPR: ${{ github.event.schedule }}
+          MANUAL_SLOT: ${{ inputs.slot }}
+          RECORD_MODE: ${{ inputs.record_mode }}
+        run: |
+          python - <<'PY'
+          import csv
+          import json
+          import os
+          import time
+          import urllib.parse
+          import urllib.request
+          from datetime import date, datetime, time as dtime, timedelta
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          LAT = 15.979408
+          LON = 108.260602
+          TZ_NAME = "Asia/Ho_Chi_Minh"
+          TZ = ZoneInfo(TZ_NAME)
+          QA_TOLERANCE_MM = 0.20
+
+          MODELS = {
+              "gfs": "ncep_gfs_seamless",
+              "ecmwf": "ecmwf_ifs",
+              "cma": "cma_grapes_global",
+          }
+
+          SCHEDULE_TO_SLOT = {
+              "0 0 * * *": "midnight_daily",
+              "45 11 * * *": "school_noon",
+              "45 18 * * *": "vrain_evening",
+          }
+
+          SLOT_CONFIG = {
+              "midnight_daily": {
+                  "scheduled_local_time": "00:00",
+                  "window_hour": 0,
+                  "aggregation": "direct_daily",
+                  "purpose": "Calendar-day baseline (00:00-24:00)",
+              },
+              "school_noon": {
+                  "scheduled_local_time": "11:45",
+                  "window_hour": 12,
+                  "aggregation": "rolling_24h",
+                  "purpose": "Compare with school rain gauge around 12:00",
+              },
+              "vrain_evening": {
+                  "scheduled_local_time": "18:45",
+                  "window_hour": 19,
+                  "aggregation": "rolling_24h",
+                  "purpose": "Compare with VRain 19:00-19:00 rain day",
+              },
+          }
+
+          def select_slot():
+              event_name = os.getenv("EVENT_NAME", "")
+              if event_name == "schedule":
+                  schedule = os.getenv("SCHEDULE_EXPR", "")
+                  if schedule not in SCHEDULE_TO_SLOT:
+                      raise RuntimeError(f"Unknown schedule expression: {schedule!r}")
+                  return SCHEDULE_TO_SLOT[schedule], True
+
+              slot = os.getenv("MANUAL_SLOT", "school_noon") or "school_noon"
+              if slot not in SLOT_CONFIG:
+                  raise RuntimeError(f"Unknown manual slot: {slot!r}")
+              official = (os.getenv("RECORD_MODE", "test_only") == "official")
+              return slot, official
+
+          def fetch_json(url, attempts=3):
+              last_error = None
+              for attempt in range(1, attempts + 1):
+                  try:
+                      req = urllib.request.Request(
+                          url,
+                          headers={"User-Agent": "RainExplorers-FPT-Danang/1.0"},
+                      )
+                      with urllib.request.urlopen(req, timeout=40) as response:
+                          return json.load(response)
+                  except Exception as exc:
+                      last_error = exc
+                      if attempt < attempts:
+                          time.sleep(2 * attempt)
+              raise RuntimeError(f"API request failed after {attempts} attempts: {last_error}")
+
+          def model_url(model_key):
+              params = {
+                  "latitude": LAT,
+                  "longitude": LON,
+                  "hourly": "precipitation",
+                  "daily": "precipitation_sum",
+                  "timezone": TZ_NAME,
+                  "forecast_days": 3,
+                  "models": MODELS[model_key],
+              }
+              # CMA GRAPES is natively 3-hourly. Request native resolution so
+              # its 3-hour accumulations are not accidentally counted 3 times.
+              if model_key == "cma":
+                  params["temporal_resolution"] = "hourly_3"
+              return "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode(params)
+
+          def pick_series(container, base_name, model_name):
+              if base_name in container:
+                  return container[base_name]
+              suffixed = f"{base_name}_{model_name}"
+              if suffixed in container:
+                  return container[suffixed]
+              raise KeyError(f"Missing {base_name} / {suffixed}")
+
+          def parse_local(ts):
+              # Open-Meteo returns local ISO timestamps without an explicit offset
+              # when timezone is requested.
+              return datetime.fromisoformat(ts).replace(tzinfo=TZ)
+
+          def sum_labeled_bins(times, values, start, end, step_hours):
+              """Sum forecast bins whose labels start inside [start, end).
+
+              This matches Open-Meteo's daily aggregation convention. For CMA,
+              native 3-hour bins can be prorated when the requested window cuts
+              through a 3-hour interval (e.g. 19:00-19:00).
+              """
+              step = timedelta(hours=step_hours)
+              total = 0.0
+              coverage_seconds = 0.0
+              used_bins = 0
+
+              for ts, raw_value in zip(times, values):
+                  if raw_value is None:
+                      continue
+                  bin_start = parse_local(ts)
+                  bin_end = bin_start + step
+                  overlap_start = max(bin_start, start)
+                  overlap_end = min(bin_end, end)
+                  if overlap_end <= overlap_start:
+                      continue
+                  fraction = (overlap_end - overlap_start).total_seconds() / step.total_seconds()
+                  total += float(raw_value) * fraction
+                  coverage_seconds += (overlap_end - overlap_start).total_seconds()
+                  used_bins += 1
+
+              return round(total, 4), coverage_seconds / 3600.0, used_bins
+
+          def daily_value(data, model_name, target_date):
+              daily = data["daily"]
+              dates = daily["time"]
+              idx = dates.index(target_date.isoformat())
+              values = pick_series(daily, "precipitation_sum", model_name)
+              return None if values[idx] is None else float(values[idx])
+
+          def quality_check_calendar_day(data, model_key, target_date):
+              """Cross-check hourly/native-bin aggregation against API daily total."""
+              model_name = MODELS[model_key]
+              daily_mm = daily_value(data, model_name, target_date)
+              start = datetime.combine(target_date, dtime(0, 0), tzinfo=TZ)
+              end = start + timedelta(days=1)
+              hourly = data["hourly"]
+              values = pick_series(hourly, "precipitation", model_name)
+              step_hours = 3 if model_key == "cma" else 1
+              derived_mm, coverage_hours, _ = sum_labeled_bins(
+                  hourly["time"], values, start, end, step_hours
+              )
+              diff = None if daily_mm is None else round(abs(derived_mm - daily_mm), 4)
+              passed = (
+                  daily_mm is not None
+                  and abs(coverage_hours - 24.0) < 1e-6
+                  and diff <= QA_TOLERANCE_MM
+              )
+              return {
+                  "daily_mm": daily_mm,
+                  "derived_calendar_day_mm": round(derived_mm, 2),
+                  "difference_mm": diff,
+                  "coverage_hours": coverage_hours,
+                  "passed": passed,
+              }
+
+          slot, official_run = select_slot()
+          cfg = SLOT_CONFIG[slot]
+          now = datetime.now(TZ)
+          capture_date = now.date()
+          window_start = datetime.combine(
+              capture_date, dtime(cfg["window_hour"], 0), tzinfo=TZ
+          )
+          window_end = window_start + timedelta(days=1)
+
+          model_results = {}
+          model_errors = {}
+          qa = {}
+          source_grids = {}
+
+          for model_key, model_name in MODELS.items():
+              try:
+                  data = fetch_json(model_url(model_key))
+                  qa[model_key] = quality_check_calendar_day(data, model_key, capture_date)
+                  source_grids[model_key] = {
+                      "latitude": data.get("latitude"),
+                      "longitude": data.get("longitude"),
+                      "elevation_m": data.get("elevation"),
+                  }
+
+                  if cfg["aggregation"] == "direct_daily":
+                      mm = daily_value(data, model_name, capture_date)
+                      method = "Open-Meteo daily precipitation_sum"
+                      coverage_hours = 24.0
+                      used_bins = None
+                  else:
+                      hourly = data["hourly"]
+                      values = pick_series(hourly, "precipitation", model_name)
+                      step_hours = 3 if model_key == "cma" else 1
+                      mm, coverage_hours, used_bins = sum_labeled_bins(
+                          hourly["time"], values, window_start, window_end, step_hours
+                      )
+                      if abs(coverage_hours - 24.0) > 1e-6:
+                          raise RuntimeError(
+                              f"Only {coverage_hours:.2f} h coverage for {slot}"
+                          )
+                      if model_key == "cma":
+                          method = (
+                              "CMA native 3-hour precipitation bins; proportional overlap "
+                              "for partial 3-hour bins"
+                          )
+                      else:
+                          method = "Sum of Open-Meteo 1-hour precipitation bins"
+
+                  model_results[model_key] = {
+                      "mm": None if mm is None else round(float(mm), 2),
+                      "method": method,
+                      "coverage_hours": coverage_hours,
+                      "bins_used": used_bins,
+                  }
+              except Exception as exc:
+                  model_results[model_key] = {
+                      "mm": None,
+                      "method": "unavailable",
+                      "coverage_hours": 0.0,
+                      "bins_used": 0,
+                  }
+                  model_errors[model_key] = str(exc)
+
+          successful = [k for k, v in model_results.items() if v["mm"] is not None]
+          if not successful:
+              raise RuntimeError("All three model requests failed; refusing to save an empty snapshot")
+
+          qa_failed = [k for k, v in qa.items() if not v.get("passed", False)]
+          overall_status = "ok"
+          if model_errors or qa_failed:
+              overall_status = "partial_or_warning"
+
+          snapshot = {
+              "schema_version": 1,
+              "official": official_run,
+              "capture_date": capture_date.isoformat(),
+              "slot": slot,
+              "scheduled_local_time": cfg["scheduled_local_time"],
+              "captured_at": now.isoformat(timespec="seconds"),
+              "location": {
+                  "name": "FPT School Da Nang",
+                  "requested_latitude": LAT,
+                  "requested_longitude": LON,
+                  "timezone": TZ_NAME,
+              },
+              "window": {
+                  "start": window_start.isoformat(timespec="minutes"),
+                  "end": window_end.isoformat(timespec="minutes"),
+                  "hours": 24,
+              },
+              "purpose": cfg["purpose"],
+              "aggregation": cfg["aggregation"],
+              "forecast_mm": {
+                  "gfs": model_results["gfs"]["mm"],
+                  "ecmwf": model_results["ecmwf"]["mm"],
+                  "cma": model_results["cma"]["mm"],
+              },
+              "model_details": model_results,
+              "quality_check": {
+                  "tolerance_mm": QA_TOLERANCE_MM,
+                  "calendar_day_cross_check": qa,
+                  "failed_models": qa_failed,
+                  "status": overall_status,
+              },
+              "source_grid_cells": source_grids,
+              "errors": model_errors,
+              "source": "Open-Meteo",
+          }
+
+          print(json.dumps(snapshot, ensure_ascii=False, indent=2))
+
+          if not official_run:
+              print("TEST ONLY: calculation completed; repository data will not be changed.")
+              raise SystemExit(0)
+
+          data_dir = Path("data")
+          snapshots_dir = data_dir / "snapshots"
+          latest_dir = data_dir / "latest"
+          snapshots_dir.mkdir(parents=True, exist_ok=True)
+          latest_dir.mkdir(parents=True, exist_ok=True)
+
+          snapshot_path = snapshots_dir / f"{capture_date.isoformat()}_{slot}.json"
+          latest_path = latest_dir / f"{slot}.json"
+          text = json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n"
+          snapshot_path.write_text(text, encoding="utf-8")
+          latest_path.write_text(text, encoding="utf-8")
+
+          history_path = data_dir / "history.csv"
+          fieldnames = [
+              "capture_date",
+              "slot",
+              "scheduled_local_time",
+              "captured_at",
+              "window_start",
+              "window_end",
+              "aggregation",
+              "gfs_mm",
+              "ecmwf_mm",
+              "cma_mm",
+              "status",
+          ]
+          new_row = {
+              "capture_date": capture_date.isoformat(),
+              "slot": slot,
+              "scheduled_local_time": cfg["scheduled_local_time"],
+              "captured_at": now.isoformat(timespec="seconds"),
+              "window_start": window_start.isoformat(timespec="minutes"),
+              "window_end": window_end.isoformat(timespec="minutes"),
+              "aggregation": cfg["aggregation"],
+              "gfs_mm": "" if model_results["gfs"]["mm"] is None else f'{model_results["gfs"]["mm"]:.2f}',
+              "ecmwf_mm": "" if model_results["ecmwf"]["mm"] is None else f'{model_results["ecmwf"]["mm"]:.2f}',
+              "cma_mm": "" if model_results["cma"]["mm"] is None else f'{model_results["cma"]["mm"]:.2f}',
+              "status": overall_status,
+          }
+
+          rows = []
+          if history_path.exists():
+              with history_path.open("r", encoding="utf-8", newline="") as f:
+                  rows = list(csv.DictReader(f))
+
+          key = (new_row["capture_date"], new_row["slot"])
+          replaced = False
+          for idx, old in enumerate(rows):
+              if (old.get("capture_date"), old.get("slot")) == key:
+                  rows[idx] = new_row
+                  replaced = True
+                  break
+          if not replaced:
+              rows.append(new_row)
+
+          slot_order = {"midnight_daily": 0, "school_noon": 1, "vrain_evening": 2}
+          rows.sort(key=lambda r: (r.get("capture_date", ""), slot_order.get(r.get("slot", ""), 99)))
+
+          with history_path.open("w", encoding="utf-8", newline="") as f:
+              writer = csv.DictWriter(f, fieldnames=fieldnames)
+              writer.writeheader()
+              writer.writerows(rows)
+          PY
+
+      - name: Commit official snapshot
+        if: github.event_name == 'schedule' || inputs.record_mode == 'official'
+        run: |
+          if [ -z "$(git status --porcelain -- data/)" ]; then
+            echo "No data changes to commit."
+            exit 0
+          fi
+
+          git config user.name "rain-explorers-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git commit -m "data: save Rain Explorers forecast snapshot"
+          git push
