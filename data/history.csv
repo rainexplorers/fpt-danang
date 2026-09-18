@@ -1,0 +1,2 @@
+capture_date,slot,scheduled_local_time,captured_at,window_start,window_end,aggregation,gfs_mm,ecmwf_mm,cma_mm,status
+2026-09-18,vrain_evening,18:45,2026-09-18T18:51:46+07:00,2026-09-18T19:00+07:00,2026-09-19T19:00+07:00,rolling_24h,4.20,10.30,3.50,ok

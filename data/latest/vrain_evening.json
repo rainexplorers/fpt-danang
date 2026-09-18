@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "official": true,
+  "capture_date": "2026-09-18",
+  "slot": "vrain_evening",
+  "scheduled_local_time": "18:45",
+  "captured_at": "2026-09-18T18:51:46+07:00",
+  "location": {
+    "name": "FPT School Da Nang",
+    "requested_latitude": 15.979408,
+    "requested_longitude": 108.260602,
+    "timezone": "Asia/Ho_Chi_Minh"
+  },
+  "window": {
+    "start": "2026-09-18T19:00+07:00",
+    "end": "2026-09-19T19:00+07:00",
+    "hours": 24
+  },
+  "purpose": "Compare with VRain 19:00-19:00 rain day",
+  "aggregation": "rolling_24h",
+  "forecast_mm": {
+    "gfs": 4.2,
+    "ecmwf": 10.3,
+    "cma": 3.5
+  },
+  "model_details": {
+    "gfs": {
+      "mm": 4.2,
+      "method": "Sum of Open-Meteo 1-hour precipitation bins",
+      "coverage_hours": 24.0,
+      "bins_used": 24
+    },
+    "ecmwf": {
+      "mm": 10.3,
+      "method": "Sum of Open-Meteo 1-hour precipitation bins",
+      "coverage_hours": 24.0,
+      "bins_used": 24
+    },
+    "cma": {
+      "mm": 3.5,
+      "method": "CMA native 3-hour precipitation bins; proportional overlap for partial 3-hour bins",
+      "coverage_hours": 24.0,
+      "bins_used": 9
+    }
+  },
+  "quality_check": {
+    "tolerance_mm": 0.2,
+    "calendar_day_cross_check": {
+      "gfs": {
+        "daily_mm": 3.2,
+        "derived_calendar_day_mm": 3.2,
+        "difference_mm": 0.0,
+        "coverage_hours": 24.0,
+        "passed": true
+      },
+      "ecmwf": {
+        "daily_mm": 9.7,
+        "derived_calendar_day_mm": 9.7,
+        "difference_mm": 0.0,
+        "coverage_hours": 24.0,
+        "passed": true
+      },
+      "cma": {
+        "daily_mm": 0.5,
+        "derived_calendar_day_mm": 0.5,
+        "difference_mm": 0.0,
+        "coverage_hours": 24.0,
+        "passed": true
+      }
+    },
+    "failed_models": [],
+    "status": "ok"
+  },
+  "source_grid_cells": {
+    "gfs": {
+      "latitude": 15.873741,
+      "longitude": 108.28125,
+      "elevation_m": 6.0
+    },
+    "ecmwf": {
+      "latitude": 15.99297,
+      "longitude": 108.22138,
+      "elevation_m": 6.0
+    },
+    "cma": {
+      "latitude": 15.9375,
+      "longitude": 108.25,
+      "elevation_m": 6.0
+    }
+  },
+  "errors": {},
+  "source": "Open-Meteo"
+}
