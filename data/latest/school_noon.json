@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-10-14",
+  "capture_date": "2026-10-15",
   "slot": "school_noon",
   "scheduled_local_time": "11:45",
-  "captured_at": "2026-10-14T12:11:33+07:00",
+  "captured_at": "2026-10-15T12:11:04+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,26 +12,26 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-10-14T12:00+07:00",
-    "end": "2026-10-15T12:00+07:00",
+    "start": "2026-10-15T12:00+07:00",
+    "end": "2026-10-16T12:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with school rain gauge around 12:00",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 5.6,
-    "ecmwf": 4.6,
+    "gfs": 0.0,
+    "ecmwf": 0.2,
     "cma": 0.0
   },
   "model_details": {
     "gfs": {
-      "mm": 5.6,
+      "mm": 0.0,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 4.6,
+      "mm": 0.2,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
@@ -47,23 +47,23 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 5.2,
-        "derived_calendar_day_mm": 5.1,
-        "difference_mm": 0.1,
+        "daily_mm": 0.5,
+        "derived_calendar_day_mm": 0.5,
+        "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "ecmwf": {
-        "daily_mm": 3.9,
-        "derived_calendar_day_mm": 3.9,
+        "daily_mm": 1.5,
+        "derived_calendar_day_mm": 1.5,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "cma": {
-        "daily_mm": 0.0,
-        "derived_calendar_day_mm": 0.2,
-        "difference_mm": 0.2,
+        "daily_mm": 1.1,
+        "derived_calendar_day_mm": 1.1,
+        "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       }
