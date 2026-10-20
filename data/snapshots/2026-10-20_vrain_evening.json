@@ -4,7 +4,7 @@
   "capture_date": "2026-10-20",
   "slot": "vrain_evening",
   "scheduled_local_time": "18:45",
-  "captured_at": "2026-10-20T00:46:41+07:00",
+  "captured_at": "2026-10-20T22:50:24+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -19,25 +19,25 @@
   "purpose": "Compare with VRain 19:00-19:00 rain day",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 9.7,
-    "ecmwf": 14.3,
-    "cma": 2.47
+    "gfs": 3.9,
+    "ecmwf": 8.9,
+    "cma": 6.0
   },
   "model_details": {
     "gfs": {
-      "mm": 9.7,
+      "mm": 3.9,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 14.3,
+      "mm": 8.9,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "cma": {
-      "mm": 2.47,
+      "mm": 6.0,
       "method": "CMA native 3-hour precipitation bins; proportional overlap for partial 3-hour bins",
       "coverage_hours": 24.0,
       "bins_used": 9
@@ -47,28 +47,29 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 1.8,
-        "derived_calendar_day_mm": 1.7,
-        "difference_mm": 0.1,
-        "coverage_hours": 24.0,
-        "passed": true
-      },
-      "ecmwf": {
-        "daily_mm": 2.1,
-        "derived_calendar_day_mm": 2.1,
+        "daily_mm": 1.0,
+        "derived_calendar_day_mm": 1.0,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
+      "ecmwf": {
+        "daily_mm": 1.3,
+        "derived_calendar_day_mm": 0.6,
+        "difference_mm": 0.7,
+        "coverage_hours": 24.0,
+        "passed": false
+      },
       "cma": {
         "daily_mm": 0.0,
-        "derived_calendar_day_mm": 1.3,
-        "difference_mm": 1.3,
+        "derived_calendar_day_mm": 2.9,
+        "difference_mm": 2.9,
         "coverage_hours": 24.0,
         "passed": false
       }
     },
     "failed_models": [
+      "ecmwf",
       "cma"
     ],
     "status": "partial_or_warning"
