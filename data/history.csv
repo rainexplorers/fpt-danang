@@ -96,3 +96,4 @@ capture_date,slot,scheduled_local_time,captured_at,window_start,window_end,aggre
 2026-10-20,vrain_evening,18:45,2026-10-20T22:50:24+07:00,2026-10-20T19:00+07:00,2026-10-21T19:00+07:00,rolling_24h,3.90,8.90,6.00,partial_or_warning
 2026-10-21,midnight_daily,00:00,2026-10-21T03:12:38+07:00,2026-10-21T00:00+07:00,2026-10-22T00:00+07:00,direct_daily,5.20,3.60,9.20,partial_or_warning
 2026-10-21,school_noon,11:45,2026-10-21T16:40:21+07:00,2026-10-21T12:00+07:00,2026-10-22T12:00+07:00,rolling_24h,4.90,5.90,1.70,partial_or_warning
+2026-10-21,vrain_evening,18:45,2026-10-21T23:07:12+07:00,2026-10-21T19:00+07:00,2026-10-22T19:00+07:00,rolling_24h,6.80,2.10,0.00,ok
