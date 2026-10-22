@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-10-21",
+  "capture_date": "2026-10-22",
   "slot": "vrain_evening",
   "scheduled_local_time": "18:45",
-  "captured_at": "2026-10-21T23:07:12+07:00",
+  "captured_at": "2026-10-22T23:02:51+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,26 +12,26 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-10-21T19:00+07:00",
-    "end": "2026-10-22T19:00+07:00",
+    "start": "2026-10-22T19:00+07:00",
+    "end": "2026-10-23T19:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with VRain 19:00-19:00 rain day",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 6.8,
-    "ecmwf": 2.1,
+    "gfs": 1.6,
+    "ecmwf": 0.0,
     "cma": 0.0
   },
   "model_details": {
     "gfs": {
-      "mm": 6.8,
+      "mm": 1.6,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 2.1,
+      "mm": 0.0,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
@@ -47,23 +47,23 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 6.7,
-        "derived_calendar_day_mm": 6.7,
+        "daily_mm": 2.5,
+        "derived_calendar_day_mm": 2.5,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "ecmwf": {
-        "daily_mm": 3.1,
-        "derived_calendar_day_mm": 3.1,
-        "difference_mm": 0.0,
+        "daily_mm": 1.7,
+        "derived_calendar_day_mm": 1.8,
+        "difference_mm": 0.1,
         "coverage_hours": 24.0,
         "passed": true
       },
       "cma": {
         "daily_mm": 0.0,
-        "derived_calendar_day_mm": 0.0,
-        "difference_mm": 0.0,
+        "derived_calendar_day_mm": 0.1,
+        "difference_mm": 0.1,
         "coverage_hours": 24.0,
         "passed": true
       }
