@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-10-22",
+  "capture_date": "2026-10-23",
   "slot": "school_noon",
   "scheduled_local_time": "11:45",
-  "captured_at": "2026-10-22T16:39:29+07:00",
+  "captured_at": "2026-10-23T16:36:29+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,26 +12,26 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-10-22T12:00+07:00",
-    "end": "2026-10-23T12:00+07:00",
+    "start": "2026-10-23T12:00+07:00",
+    "end": "2026-10-24T12:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with school rain gauge around 12:00",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 2.2,
-    "ecmwf": 0.5,
+    "gfs": 0.0,
+    "ecmwf": 0.0,
     "cma": 0.0
   },
   "model_details": {
     "gfs": {
-      "mm": 2.2,
+      "mm": 0.0,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 0.5,
+      "mm": 0.0,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
@@ -47,23 +47,23 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 3.0,
-        "derived_calendar_day_mm": 3.0,
+        "daily_mm": 0.0,
+        "derived_calendar_day_mm": 0.0,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "ecmwf": {
-        "daily_mm": 2.0,
-        "derived_calendar_day_mm": 2.1,
-        "difference_mm": 0.1,
+        "daily_mm": 0.0,
+        "derived_calendar_day_mm": 0.0,
+        "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "cma": {
         "daily_mm": 0.0,
-        "derived_calendar_day_mm": 0.1,
-        "difference_mm": 0.1,
+        "derived_calendar_day_mm": 0.0,
+        "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       }
