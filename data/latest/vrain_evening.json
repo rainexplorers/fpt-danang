@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-10-23",
+  "capture_date": "2026-10-24",
   "slot": "vrain_evening",
   "scheduled_local_time": "18:45",
-  "captured_at": "2026-10-23T22:55:43+07:00",
+  "captured_at": "2026-10-24T21:54:19+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,8 +12,8 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-10-23T19:00+07:00",
-    "end": "2026-10-24T19:00+07:00",
+    "start": "2026-10-24T19:00+07:00",
+    "end": "2026-10-25T19:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with VRain 19:00-19:00 rain day",
