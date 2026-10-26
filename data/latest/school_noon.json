@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-10-25",
+  "capture_date": "2026-10-26",
   "slot": "school_noon",
   "scheduled_local_time": "11:45",
-  "captured_at": "2026-10-25T16:25:46+07:00",
+  "captured_at": "2026-10-26T17:32:33+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,26 +12,26 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-10-25T12:00+07:00",
-    "end": "2026-10-26T12:00+07:00",
+    "start": "2026-10-26T12:00+07:00",
+    "end": "2026-10-27T12:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with school rain gauge around 12:00",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 0.0,
-    "ecmwf": 0.7,
+    "gfs": 4.2,
+    "ecmwf": 2.8,
     "cma": 0.0
   },
   "model_details": {
     "gfs": {
-      "mm": 0.0,
+      "mm": 4.2,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 0.7,
+      "mm": 2.8,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
@@ -47,15 +47,15 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 0.0,
-        "derived_calendar_day_mm": 0.0,
+        "daily_mm": 1.4,
+        "derived_calendar_day_mm": 1.4,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "ecmwf": {
-        "daily_mm": 0.1,
-        "derived_calendar_day_mm": 0.1,
+        "daily_mm": 1.6,
+        "derived_calendar_day_mm": 1.6,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
