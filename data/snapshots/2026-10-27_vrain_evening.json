@@ -4,7 +4,7 @@
   "capture_date": "2026-10-27",
   "slot": "vrain_evening",
   "scheduled_local_time": "18:45",
-  "captured_at": "2026-10-27T00:39:16+07:00",
+  "captured_at": "2026-10-27T23:52:24+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -19,25 +19,25 @@
   "purpose": "Compare with VRain 19:00-19:00 rain day",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 10.4,
-    "ecmwf": 34.5,
-    "cma": 7.13
+    "gfs": 11.7,
+    "ecmwf": 33.5,
+    "cma": 5.43
   },
   "model_details": {
     "gfs": {
-      "mm": 10.4,
+      "mm": 11.7,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 34.5,
+      "mm": 33.5,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "cma": {
-      "mm": 7.13,
+      "mm": 5.43,
       "method": "CMA native 3-hour precipitation bins; proportional overlap for partial 3-hour bins",
       "coverage_hours": 24.0,
       "bins_used": 9
@@ -47,22 +47,22 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 9.3,
-        "derived_calendar_day_mm": 9.3,
+        "daily_mm": 3.0,
+        "derived_calendar_day_mm": 3.0,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "ecmwf": {
-        "daily_mm": 5.9,
-        "derived_calendar_day_mm": 5.9,
+        "daily_mm": 3.0,
+        "derived_calendar_day_mm": 3.0,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "cma": {
-        "daily_mm": 5.5,
-        "derived_calendar_day_mm": 5.5,
+        "daily_mm": 4.4,
+        "derived_calendar_day_mm": 4.4,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
