@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-10-28",
+  "capture_date": "2026-10-29",
   "slot": "school_noon",
   "scheduled_local_time": "11:45",
-  "captured_at": "2026-10-28T17:50:25+07:00",
+  "captured_at": "2026-10-29T18:07:17+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,32 +12,32 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-10-28T12:00+07:00",
-    "end": "2026-10-29T12:00+07:00",
+    "start": "2026-10-29T12:00+07:00",
+    "end": "2026-10-30T12:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with school rain gauge around 12:00",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 22.2,
-    "ecmwf": 30.8,
-    "cma": 61.1
+    "gfs": 7.8,
+    "ecmwf": 14.4,
+    "cma": 24.3
   },
   "model_details": {
     "gfs": {
-      "mm": 22.2,
+      "mm": 7.8,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 30.8,
+      "mm": 14.4,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "cma": {
-      "mm": 61.1,
+      "mm": 24.3,
       "method": "CMA native 3-hour precipitation bins; proportional overlap for partial 3-hour bins",
       "coverage_hours": 24.0,
       "bins_used": 8
@@ -47,22 +47,22 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 22.5,
-        "derived_calendar_day_mm": 22.5,
+        "daily_mm": 14.8,
+        "derived_calendar_day_mm": 14.8,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "ecmwf": {
-        "daily_mm": 53.6,
-        "derived_calendar_day_mm": 53.6,
+        "daily_mm": 19.3,
+        "derived_calendar_day_mm": 19.3,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "cma": {
-        "daily_mm": 41.6,
-        "derived_calendar_day_mm": 41.6,
+        "daily_mm": 72.3,
+        "derived_calendar_day_mm": 72.3,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
