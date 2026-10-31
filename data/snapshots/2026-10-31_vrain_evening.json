@@ -4,7 +4,7 @@
   "capture_date": "2026-10-31",
   "slot": "vrain_evening",
   "scheduled_local_time": "18:45",
-  "captured_at": "2026-10-31T00:14:24+07:00",
+  "captured_at": "2026-10-31T23:19:34+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -54,8 +54,8 @@
         "passed": true
       },
       "ecmwf": {
-        "daily_mm": 3.1,
-        "derived_calendar_day_mm": 3.1,
+        "daily_mm": 2.7,
+        "derived_calendar_day_mm": 2.7,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
