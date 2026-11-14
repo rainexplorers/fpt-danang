@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-11-14",
+  "capture_date": "2026-11-15",
   "slot": "vrain_evening",
   "scheduled_local_time": "18:45",
-  "captured_at": "2026-11-14T01:47:09+07:00",
+  "captured_at": "2026-11-15T00:18:43+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,26 +12,26 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-11-14T19:00+07:00",
-    "end": "2026-11-15T19:00+07:00",
+    "start": "2026-11-15T19:00+07:00",
+    "end": "2026-11-16T19:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with VRain 19:00-19:00 rain day",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": 2.4,
-    "ecmwf": 0.0,
+    "gfs": 0.3,
+    "ecmwf": 0.4,
     "cma": 0.0
   },
   "model_details": {
     "gfs": {
-      "mm": 2.4,
+      "mm": 0.3,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "ecmwf": {
-      "mm": 0.0,
+      "mm": 0.4,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
@@ -47,22 +47,22 @@
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
       "gfs": {
-        "daily_mm": 0.7,
-        "derived_calendar_day_mm": 0.7,
-        "difference_mm": 0.0,
-        "coverage_hours": 24.0,
-        "passed": true
-      },
-      "ecmwf": {
         "daily_mm": 0.0,
         "derived_calendar_day_mm": 0.0,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
+      "ecmwf": {
+        "daily_mm": 0.5,
+        "derived_calendar_day_mm": 0.5,
+        "difference_mm": 0.0,
+        "coverage_hours": 24.0,
+        "passed": true
+      },
       "cma": {
-        "daily_mm": 0.3,
-        "derived_calendar_day_mm": 0.3,
+        "daily_mm": 0.0,
+        "derived_calendar_day_mm": 0.0,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
