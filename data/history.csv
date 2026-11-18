@@ -176,3 +176,4 @@ capture_date,slot,scheduled_local_time,captured_at,window_start,window_end,aggre
 2026-11-18,midnight_daily,00:00,2026-11-18T06:41:25+07:00,2026-11-18T00:00+07:00,2026-11-19T00:00+07:00,direct_daily,,0.80,1.00,partial_or_warning
 2026-11-18,school_noon,11:45,2026-11-18T20:28:26+07:00,2026-11-18T12:00+07:00,2026-11-19T12:00+07:00,rolling_24h,,,0.40,partial_or_warning
 2026-11-18,vrain_evening,18:45,2026-11-18T03:01:14+07:00,2026-11-18T19:00+07:00,2026-11-19T19:00+07:00,rolling_24h,4.10,9.40,7.77,ok
+2026-11-19,vrain_evening,18:45,2026-11-19T02:37:28+07:00,2026-11-19T19:00+07:00,2026-11-20T19:00+07:00,rolling_24h,17.30,19.20,19.30,ok
