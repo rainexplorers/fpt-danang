@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "official": true,
-  "capture_date": "2026-11-25",
+  "capture_date": "2026-11-26",
   "slot": "school_noon",
   "scheduled_local_time": "11:45",
-  "captured_at": "2026-11-25T21:59:42+07:00",
+  "captured_at": "2026-11-26T21:29:47+07:00",
   "location": {
     "name": "FPT School Da Nang",
     "requested_latitude": 15.979408,
@@ -12,32 +12,32 @@
     "timezone": "Asia/Ho_Chi_Minh"
   },
   "window": {
-    "start": "2026-11-25T12:00+07:00",
-    "end": "2026-11-26T12:00+07:00",
+    "start": "2026-11-26T12:00+07:00",
+    "end": "2026-11-27T12:00+07:00",
     "hours": 24
   },
   "purpose": "Compare with school rain gauge around 12:00",
   "aggregation": "rolling_24h",
   "forecast_mm": {
-    "gfs": null,
-    "ecmwf": 110.4,
-    "cma": 25.4
+    "gfs": 0.5,
+    "ecmwf": 18.2,
+    "cma": 22.4
   },
   "model_details": {
     "gfs": {
-      "mm": null,
-      "method": "unavailable",
-      "coverage_hours": 0.0,
-      "bins_used": 0
+      "mm": 0.5,
+      "method": "Sum of Open-Meteo 1-hour precipitation bins",
+      "coverage_hours": 24.0,
+      "bins_used": 24
     },
     "ecmwf": {
-      "mm": 110.4,
+      "mm": 18.2,
       "method": "Sum of Open-Meteo 1-hour precipitation bins",
       "coverage_hours": 24.0,
       "bins_used": 24
     },
     "cma": {
-      "mm": 25.4,
+      "mm": 22.4,
       "method": "CMA native 3-hour precipitation bins; proportional overlap for partial 3-hour bins",
       "coverage_hours": 24.0,
       "bins_used": 8
@@ -46,25 +46,37 @@
   "quality_check": {
     "tolerance_mm": 0.2,
     "calendar_day_cross_check": {
+      "gfs": {
+        "daily_mm": 65.6,
+        "derived_calendar_day_mm": 65.6,
+        "difference_mm": 0.0,
+        "coverage_hours": 24.0,
+        "passed": true
+      },
       "ecmwf": {
-        "daily_mm": 76.4,
-        "derived_calendar_day_mm": 76.4,
+        "daily_mm": 12.7,
+        "derived_calendar_day_mm": 12.7,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       },
       "cma": {
-        "daily_mm": 24.3,
-        "derived_calendar_day_mm": 24.3,
+        "daily_mm": 36.3,
+        "derived_calendar_day_mm": 36.3,
         "difference_mm": 0.0,
         "coverage_hours": 24.0,
         "passed": true
       }
     },
     "failed_models": [],
-    "status": "partial_or_warning"
+    "status": "ok"
   },
   "source_grid_cells": {
+    "gfs": {
+      "latitude": 15.873741,
+      "longitude": 108.28125,
+      "elevation_m": 6.0
+    },
     "ecmwf": {
       "latitude": 15.99297,
       "longitude": 108.22138,
@@ -76,8 +88,6 @@
       "elevation_m": 6.0
     }
   },
-  "errors": {
-    "gfs": "API request failed after 3 attempts: <urlopen error _ssl.c:1063: The handshake operation timed out>"
-  },
+  "errors": {},
   "source": "Open-Meteo"
 }
